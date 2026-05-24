@@ -16,6 +16,21 @@ export const sendEmail = async ({
   text,
   html,
 }: Params) => {
+  // If in development mode and Resend key is placeholder/missing, mock email delivery
+  if (
+    Env.NODE_ENV === "development" &&
+    (!Env.RESEND_API_KEY || Env.RESEND_API_KEY === "your_resend_api_key_here")
+  ) {
+    console.log("-----------------------------------------");
+    console.log("📨 [MOCK EMAIL SENT] (Development Mode)");
+    console.log(`From:    ${from}`);
+    console.log(`To:      ${to}`);
+    console.log(`Subject: ${subject}`);
+    console.log(`Text:    ${text}`);
+    console.log("-----------------------------------------");
+    return { id: "mock-email-id-" + Date.now() };
+  }
+
   const { data, error } = await resend.emails.send({
     from,
     to: Array.isArray(to) ? to : [to],

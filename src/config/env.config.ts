@@ -15,6 +15,13 @@ const envConfig = () => ({
   JWT_REFRESH_EXPIRES_IN: getEnv("JWT_REFRESH_EXPIRES_IN", "7d") as string,
 
   OPENAI_API_KEY: getEnv("OPENAI_API_KEY"),
+  // new
+  OPENAI_API_BASE_URL: getEnv(
+    "OPENAI_API_BASE_URL",
+    "https://api.openai.com/v1"
+  ),
+  OPENAI_MODEL: getEnv("OPENAI_MODEL", "gpt-4o"),
+  //add
   UPLIFT_AI_API_KEY: getEnv("UPLIFT_AI_API_KEY"),
   GEMINI_API_KEY: getEnv("GEMINI_API_KEY"),
 

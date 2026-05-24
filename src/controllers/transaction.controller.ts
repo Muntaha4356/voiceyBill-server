@@ -154,8 +154,12 @@ export const scanReceiptController = asyncHandler(
 
     const result = await scanReceiptService(file);
 
+    const hasError = Boolean(result && (result as any).error);
+    // Code: Muntaha End
+
     return res.status(HTTPSTATUS.OK).json({
-      message: "Reciept scanned successfully",
+      success: !hasError,
+      message: hasError ? "Receipt scanning failed" : "Receipt scanned successfully",
       data: result,
     });
   }

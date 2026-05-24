@@ -291,13 +291,70 @@ export const scanReceiptService = async (
       max_tokens: 500,
     });
 
-    const content = result.choices[0]?.message?.content;
+    // Try multiple common locations for returned content to be robust
+    const pickers = [
+      (r: any) => r?.choices?.[0]?.message?.content,
+      (r: any) => r?.choices?.[0]?.text,
+      (r: any) => r?.choices?.[0]?.message?.content?.text,
+      (r: any) => r?.output?.[0]?.content?.[0]?.text,
+      (r: any) => r?.data?.[0]?.text,
+      (r: any) => r?.response?.choices?.[0]?.message?.content,
+      (r: any) => r?.result?.content,
+    ];
 
-    if (!content) return { error: "Could not read receipt content" };
+    let content: any = undefined;
+    for (const pick of pickers) {
+      try {
+        const v = pick(result as any);
+        if (v !== undefined && v !== null) {
+          content = v;
+          break;
+        }
+      } catch (e) {
+        // ignore and continue
+      }
+    }
 
-    const data = JSON.parse(content);
+    if (content === undefined || content === null) {
+      console.error("scanReceiptService no choices/content found on AI response", result);
+      return { error: "No choices returned from AI" };
+    }
+
+    // If content is an object, normalize to string (prefer `.text` when present)
+    if (typeof content === "object") {
+      if (typeof content.text === "string" && content.text.trim()) {
+        content = content.text;
+      } else {
+        try {
+          content = JSON.stringify(content);
+        } catch (e) {
+          content = String(content);
+        }
+      }
+    }
+
+    // code: muntahaned
+
+    if (!content) {
+      console.warn("scanReceiptService no AI content returned");
+      return { error: "Could not read receipt content" };
+    }
+
+    let data;
+    try {
+      data = JSON.parse(content);
+    } catch (parseError) {
+      console.error("scanReceiptService JSON parse failed", { content, parseError });
+      return { error: "Could not parse receipt content" };
+    }
+
+    console.log("scanReceiptService parsed data", data);
 
     if (!data.amount || !data.date) {
+      console.warn("scanReceiptService parsed response missing required fields", {
+        amount: data.amount,
+        date: data.date,
+      });
       return { error: "Receipt missing required information" };
     }
 
@@ -312,6 +369,7 @@ export const scanReceiptService = async (
       receiptUrl: file.path,
     };
   } catch (error) {
+    console.error("scanReceiptService caught error", error);
     return { error: "Receipt scanning service unavailable" };
   }
 };

@@ -104,7 +104,9 @@ npm ci
 | `CLOUDINARY_API_KEY` | Cloudinary API key |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret |
 | `GEMINI_API_KEY` | Google Generative AI key (voice processing) |
-| `OPENAI_API_KEY` | OpenAI key (receipt scanning) |
+| `OPENAI_API_KEY` | OpenAI or OpenRouter API key (receipt scanning) |
+| `OPENAI_API_BASE_URL` | Base URL for OpenAI or OpenRouter requests |
+| `OPENAI_MODEL` | Model used for receipt scanning and report generation |
 | `RESEND_API_KEY` | Resend API key (report emails) |
 | `FRONTEND_ORIGIN` | Allowed CORS origin for the web client |
 
