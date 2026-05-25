@@ -17,6 +17,7 @@ import {
   resetPasswordService,
   verifyOtpService,
 } from "../services/auth.service";
+import { generateSseTicket } from "../services/sse-ticket.service";
 
 export const registerController = asyncHandler(
   async (req: Request, res: Response) => {
@@ -92,4 +93,17 @@ export const resetPasswordController = asyncHandler(
       message: result.message,
     });
   }
+);
+
+export const generateSseTicketController = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = String(req.user?._id);
+    const ticket = await generateSseTicket(userId);
+
+    return res.status(HTTPSTATUS.OK).json({
+      message: "SSE ticket generated successfully",
+      ticket,
+      expiresInSeconds: 10,
+    });
+  },
 );

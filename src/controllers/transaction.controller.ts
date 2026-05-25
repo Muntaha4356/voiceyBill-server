@@ -19,14 +19,25 @@ import {
   scanReceiptService,
   updateTransactionService,
 } from "../services/transaction.service";
+import { createNotificationService } from "../services/notification.service";
 import { TransactionTypeEnum } from "../models/transaction.model";
 
 export const createTransactionController = asyncHandler(
   async (req: Request, res: Response) => {
     const body = createTransactionSchema.parse(req.body);
-    const userId = req.user?._id;
+    const userId = String(req.user?._id);
 
     const transaction = await createTransactionService(body, userId);
+
+    createNotificationService({
+      userId,
+      transactionId: String(transaction._id),
+      type: transaction.type,
+      title: `${transaction.type === TransactionTypeEnum.INCOME ? "Income" : "Expense"} transaction recorded: ${transaction.title}`,
+      amount: Number(transaction.amount),
+    }).catch((error) => {
+      console.error("Notification creation failed:", error);
+    });
 
     return res.status(HTTPSTATUS.CREATED).json({
       message: "Transaction created successfully",

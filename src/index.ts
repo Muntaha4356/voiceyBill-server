@@ -16,6 +16,7 @@ import transactionRoutes from "./routes/transaction.route";
 import { initializeCrons } from "./cron";
 import reportRoutes from "./routes/report.route";
 import analyticsRoutes from "./routes/analytics.route";
+import notificationRoutes from "./routes/notification.route";
 import voiceRoutes from "./routes/voice.route";
 
 const app = express();
@@ -134,6 +135,7 @@ app.get(
 app.use(`${BASE_PATH}/auth`, ensureDatabaseConnection, authRoutes);
 app.use(`${BASE_PATH}/user`, ensureDatabaseConnection, passportAuthenticateJwt, userRoutes);
 app.use(`${BASE_PATH}/transaction`, ensureDatabaseConnection, passportAuthenticateJwt, transactionRoutes);
+app.use(`${BASE_PATH}/notification`, ensureDatabaseConnection, notificationRoutes);
 app.use(`${BASE_PATH}/report`, ensureDatabaseConnection, passportAuthenticateJwt, reportRoutes);
 app.use(`${BASE_PATH}/analytics`, ensureDatabaseConnection, passportAuthenticateJwt, analyticsRoutes);
 app.use(`${BASE_PATH}/voice`, ensureDatabaseConnection, passportAuthenticateJwt, voiceRoutes);

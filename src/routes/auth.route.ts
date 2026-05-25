@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   forgotPasswordController,
+  generateSseTicketController,
   loginController,
   resendOtpController,
   registerController,
@@ -8,6 +9,7 @@ import {
   verifyOtpController,
 } from "../controllers/auth.controller";
 import { otpLimiter, authLimiter } from "../middlewares/rateLimit.middleware";
+import { passportAuthenticateJwt } from "../config/passport.config";
 
 const authRoutes = Router();
 
@@ -17,5 +19,10 @@ authRoutes.post("/verify-otp", otpLimiter, verifyOtpController);
 authRoutes.post("/resend-otp", otpLimiter, resendOtpController);
 authRoutes.post("/forgot-password", otpLimiter, forgotPasswordController);
 authRoutes.post("/reset-password", otpLimiter, resetPasswordController);
+authRoutes.post(
+  "/sse-ticket",
+  passportAuthenticateJwt,
+  generateSseTicketController,
+);
 
 export default authRoutes;
