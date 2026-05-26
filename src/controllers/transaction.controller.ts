@@ -150,9 +150,23 @@ export const bulkTransactionController = asyncHandler(
 
 export const scanReceiptController = asyncHandler(
   async (req: Request, res: Response) => {
+    console.log("[Receipt Controller] Endpoint called");
     const file = req?.file;
 
+    if (!file) {
+      console.error("[Receipt Controller] No file in request");
+    } else {
+      console.log("[Receipt Controller] File received:", {
+        fieldname: file.fieldname,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size,
+      });
+    }
+
     const result = await scanReceiptService(file);
+
+    console.log("[Receipt Controller] Service result:", result);
 
     return res.status(HTTPSTATUS.OK).json({
       message: "Reciept scanned successfully",

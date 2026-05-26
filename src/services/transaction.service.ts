@@ -361,9 +361,20 @@ export const scanReceiptService = async (
   }
 
   try {
+    console.log("[Receipt Scanner] File received:", {
+      filename: file.filename,
+      mimetype: file.mimetype,
+      size: file.size,
+      path: file.path,
+    });
+
     if (!file.path) {
+      console.error("[Receipt Scanner] ERROR: No file.path available");
       throw new BadRequestException("Failed to upload file");
     }
+
+    console.log("[Receipt Scanner] Starting OpenAI/OpenRouter API call");
+    console.log("[Receipt Scanner] Model being used:", openAIModel);
 
     const result = await openai.chat.completions.create({
       model: openAIModel,
@@ -381,18 +392,33 @@ export const scanReceiptService = async (
       max_tokens: 500,
     });
 
+    console.log("[Receipt Scanner] API response received successfully");
+
     const content = result.choices[0]?.message?.content;
 
     if (!content) {
+      console.error("[Receipt Scanner] ERROR: No content in API response");
       return { error: "Could not read receipt content" };
     }
 
+    console.log("[Receipt Scanner] Parsing JSON content");
     const data = JSON.parse(content);
+    console.log("[Receipt Scanner] Parsed data:", {
+      title: data.title,
+      amount: data.amount,
+      date: data.date,
+      category: data.category,
+    });
 
     if (!data.amount || !data.date) {
+      console.error("[Receipt Scanner] ERROR: Missing required fields", {
+        hasAmount: !!data.amount,
+        hasDate: !!data.date,
+      });
       return { error: "Receipt missing required information" };
     }
 
+    console.log("[Receipt Scanner] Receipt scanned successfully");
     return {
       title: data.title || "Receipt",
       amount: data.amount,
@@ -403,7 +429,15 @@ export const scanReceiptService = async (
       type: data.type,
       receiptUrl: file.path,
     };
-  } catch (error) {
+  } catch (error: any) {
+    console.error("[Receipt Scanner] ERROR caught:", {
+      message: error.message,
+      name: error.name,
+      code: error.code,
+      status: error.status,
+      response: error.response?.data || "no response data",
+    });
+    console.error("[Receipt Scanner] Full error:", error);
     return { error: "Receipt scanning service unavailable" };
   }
 };

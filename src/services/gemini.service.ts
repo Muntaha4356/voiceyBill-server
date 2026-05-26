@@ -1,17 +1,18 @@
-import OpenAI from "openai";
 import { TransactionData } from "../@types/voice.type";
 import { voiceConfig } from "../config/voice.config";
+import { createOpenAIClient } from "../config/openai.config";
 import { AppError } from "../utils/app-error";
+import { extractProviderErrorMessage } from "../utils/provider-error";
 
 export class OpenAIClassificationService {
-  private client: OpenAI | null = null;
+  private client: ReturnType<typeof createOpenAIClient> | null = null;
 
   constructor(apiKey: string) {
     if (apiKey) {
       try {
-        this.client = new OpenAI({ apiKey });
+        this.client = createOpenAIClient(apiKey);
       } catch (error) {
-        console.error("Failed to initialize OpenAI client:", error);
+        console.error("Failed to initialize OpenAI/OpenRouter client:", error);
         this.client = null;
       }
     }
@@ -75,7 +76,8 @@ Output only valid JSON. Do not include any explanation or markdown.`;
       const data = JSON.parse(content);
       return this.validateAndCleanData(data) as TransactionData;
     } catch (error: any) {
-      throw new AppError(`Classification failed: ${error.message}`, 500);
+      const message = extractProviderErrorMessage(error);
+      throw new AppError(`Classification failed: ${message}`, 500);
     }
   }
 

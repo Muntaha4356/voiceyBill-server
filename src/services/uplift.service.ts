@@ -3,6 +3,7 @@ import path from "path";
 import { TranscriptionResponse } from "../@types/voice.type";
 import { voiceConfig } from "../config/voice.config";
 import { AppError } from "../utils/app-error";
+import { extractProviderErrorMessage } from "../utils/provider-error";
 
 export class UpliftAIService {
   private apiKey: string;
@@ -101,13 +102,8 @@ export class UpliftAIService {
       };
     } catch (error: any) {
       console.error("Uplift AI API request failed:", error);
-
-      let errorDetail = "Unknown error";
-      if (error.message) {
-        errorDetail = error.message;
-      }
-
-      throw new AppError(`Transcription failed: ${errorDetail}`, 500);
+      const message = extractProviderErrorMessage(error);
+      throw new AppError(`Transcription failed: ${message}`, 500);
     }
   }
 

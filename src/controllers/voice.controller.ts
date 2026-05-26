@@ -7,6 +7,7 @@ import { UpliftAIService } from "../services/uplift.service";
 import { GeminiClassificationService } from "../services/gemini.service";
 import { voiceConfig } from "../config/voice.config";
 import { AppError } from "../utils/app-error";
+import { extractProviderErrorMessage } from "../utils/provider-error";
 import { asyncHandler } from "../middlewares/asyncHandler.middlerware";
 import { HTTPSTATUS } from "../config/http.config";
 
@@ -134,8 +135,10 @@ export const processVoiceTransaction = asyncHandler(
     } catch (error: any) {
       console.error("Unexpected error in voice processing:", error);
 
+      const extracted = extractProviderErrorMessage(error);
+
       // Handle specific timeout errors
-      if (error.message.includes("timeout")) {
+      if (extracted.toLowerCase().includes("timeout")) {
         return res.status(HTTPSTATUS.OK).json({
           success: false,
           message: "Voice processed successfully",
@@ -150,7 +153,7 @@ export const processVoiceTransaction = asyncHandler(
         success: false,
         message: "Voice processed successfully",
         data: {
-          error: error.message || "Voice processing service unavailable",
+          error: extracted || "Voice processing service unavailable",
         },
       });
     } finally {
