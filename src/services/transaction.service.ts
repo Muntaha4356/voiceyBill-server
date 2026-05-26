@@ -333,7 +333,6 @@ export const scanReceiptService = async (
       }
     }
 
-    // code: muntahaned
 
     if (!content) {
       console.warn("scanReceiptService no AI content returned");

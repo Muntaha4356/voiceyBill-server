@@ -11,6 +11,7 @@ export const passwordSchema = z
   .string()
   .trim()
   .min(8, "Password must be at least 8 characters")
+  .regex(/[a-z]/, "Must contain a lowercase letter")
   .regex(/[A-Z]/, "Must contain uppercase letter")
   .regex(/[0-9]/, "Must contain a number")
   .regex(/[^A-Za-z0-9]/, "Must contain special character");

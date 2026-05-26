@@ -155,7 +155,7 @@ export const scanReceiptController = asyncHandler(
     const result = await scanReceiptService(file);
 
     const hasError = Boolean(result && (result as any).error);
-    // Code: Muntaha End
+
 
     return res.status(HTTPSTATUS.OK).json({
       success: !hasError,
