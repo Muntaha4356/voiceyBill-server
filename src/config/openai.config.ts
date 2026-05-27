@@ -48,5 +48,4 @@ export const createOpenAIClient = (apiKey: string) => ({
 });
 
 export const openai = createOpenAIClient(Env.OPENAI_API_KEY);
-// export const openAIModel = "gpt-4o";
-export const openAIModel = "google/gemini-2.5-flash";
+export const openAIModel = "gpt-4o";

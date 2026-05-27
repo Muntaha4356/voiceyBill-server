@@ -8,8 +8,7 @@ export const voiceConfig: VoiceConfig = {
   uplift_ai_model: 'scribe',
   uplift_ai_language: 'ur',
   uplift_ai_domain: 'phone-commerce',
-  // openai_model: 'gpt-4o',
-  openai_model: 'google/gemini-2.5-flash',
+  openai_model: 'gpt-4o',
   openai_temperature: 0.0,
   categories: [
     'groceries',
